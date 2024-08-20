@@ -34,6 +34,7 @@ float KI; //斜率
 
 //定义模式
 unsigned char Mode=0;
+unsigned char displaymode = 0;
 //mode0 :电压电流常规显示模式
 //mode1 :电压5V校准
 //mode2 :电压15V校准
@@ -122,6 +123,10 @@ void DisplayBuff(void)
 		Seg_Reg[1] =1+10;
 		Seg_Reg[2]=5;
 		DisplayI(I_Buffer);
+	}else if(Mode==5)
+	{
+
+		DisplayMode(displaymode);
 	}
 }
 
@@ -298,7 +303,11 @@ void BTIM1_IRQHandler(void)
 		
 		
 		timecount++;
+		if(Mode == 5)
+			Dis_Refresh2();
+		else
     Dis_Refresh();//数码管扫描显示
+		
 		
 	  	if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
        {
@@ -350,7 +359,11 @@ void BTIM1_IRQHandler(void)
 				 if(keytime3>=100 )
 				 {
 					  keytime3=0;  //切换模式
-						Mode=0; 
+						Mode=5;
+					 displaymode++;
+					 		if(displaymode>8)
+			displaymode=0;
+					 
 						BrushFlag=1; //更新数码管
 				 }			 
 			 }

@@ -10,5 +10,6 @@ void Close_Com(void);
 void Display(uint32_t value);
 void DisplayI(uint32_t value);
 void Dis_Refresh(void);
-
+void DisplayMode(uint32_t value);
+void Dis_Refresh2(void);
 #endif
