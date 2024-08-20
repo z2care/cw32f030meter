@@ -385,122 +385,122 @@
             <File>
               <FileName>cw32f030_adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_adc.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_adc.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_atim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_atim.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_atim.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_awt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_awt.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_awt.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_btim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_btim.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_btim.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_crc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_crc.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_crc.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_debug.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_debug.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_debug.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_digitalsign.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_digitalsign.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_digitalsign.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_dma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_dma.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_dma.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_flash.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_flash.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_gpio.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_gpio.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_gtim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_gtim.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_gtim.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_i2c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_i2c.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_i2c.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_iwdt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_iwdt.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_iwdt.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_lvd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_lvd.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_lvd.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_pwr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_pwr.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_pwr.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_ram.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_ram.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_ram.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_rcc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_rcc.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_rcc.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_rtc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_rtc.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_rtc.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_spi.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_spi.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_systick.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_systick.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_systick.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_uart.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_uart.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_vc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_vc.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_vc.c</FilePath>
             </File>
             <File>
               <FileName>cw32f030_wwdt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\cw32f030_wwdt.c</FilePath>
+              <FilePath>.\libraries\src\cw32f030_wwdt.c</FilePath>
             </File>
             <File>
               <FileName>system_cw32f030.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libraries\src\system_cw32f030.c</FilePath>
+              <FilePath>.\libraries\src\system_cw32f030.c</FilePath>
             </File>
           </Files>
         </Group>

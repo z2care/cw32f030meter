@@ -51,37 +51,37 @@ void RCC_Configuration(void)
   RCC_HCLKPRS_Config(RCC_HCLK_DIV1);
   RCC_PCLKPRS_Config(RCC_PCLK_DIV1);
   
-  /* 2. 使能PLL，通过PLL倍频到64MHz */
+  /* 2. 使能PLL，通过PLL倍频到48MHz */
   RCC_PLL_Enable(RCC_PLLSOURCE_HSI, 8000000, 6);     // HSI 默认输出频率8MHz
  // RCC_PLL_OUT();  //PC13脚输出PLL时钟
   
   ///< 当使用的时钟源HCLK大于24M,小于等于48MHz：设置FLASH 读等待周期为2 cycle
   ///< 当使用的时钟源HCLK大于48MHz：设置FLASH 读等待周期为3 cycle
   __RCC_FLASH_CLK_ENABLE();
-  FLASH_SetLatency(FLASH_Latency_3);   
+  FLASH_SetLatency(FLASH_Latency_2);
     
   /* 3. 时钟切换到PLL */
   RCC_SysClk_Switch(RCC_SYSCLKSRC_PLL);
-  RCC_SystemCoreClockUpdate(48000000);	
+  RCC_SystemCoreClockUpdate(48000000);
 	RCC_PCLKPRS_Config(RCC_PCLK_DIV8); //配置HCLK 到 PCLK的分频系数  6MHz
 }
 
 
 void KEYGPIO_Init(void)
 {
-	__RCC_GPIOB_CLK_ENABLE();//打开GPIOB的时钟	
-	__RCC_GPIOC_CLK_ENABLE();//打开GPIOC的时钟	
-	GPIO_InitTypeDef GPIO_InitStruct; 
+	__RCC_GPIOA_CLK_ENABLE();//打开GPIOB的时钟
+	__RCC_GPIOC_CLK_ENABLE();//打开GPIOC的时钟
+	GPIO_InitTypeDef GPIO_InitStruct;
 		
-	GPIO_InitStruct.Pins = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14; // 
+	GPIO_InitStruct.Pins = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10; //K1 K2 K3
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT_PULLUP;
   GPIO_InitStruct.IT = GPIO_IT_NONE;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-  GPIO_Init(CW_GPIOB, &GPIO_InitStruct);
+  GPIO_Init(CW_GPIOA, &GPIO_InitStruct);
 	
 	
-	GPIO_InitStruct.Pins = GPIO_PIN_13; // 
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP; 
+	GPIO_InitStruct.Pins = GPIO_PIN_13; //LED
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_Init(CW_GPIOC, &GPIO_InitStruct);
 }
 
@@ -90,10 +90,10 @@ void DisplayBuff(void)
 {
   if(Mode==0)
   {
-		 Display(V_Buffer);
-		
-		 if(I_Buffer>400)I_Buffer=400;
-		 DisplayI(I_Buffer);
+	 Display(V_Buffer);
+
+	 if(I_Buffer>400)I_Buffer=400;
+	 DisplayI(I_Buffer);
 	}		
 	else if(Mode==1) //S.05.
 	{
@@ -300,7 +300,7 @@ void BTIM1_IRQHandler(void)
 		timecount++;
     Dis_Refresh();//数码管扫描显示
 		
-		 	if(GPIO_ReadPin(CW_GPIOB,GPIO_PIN_12)==GPIO_Pin_RESET)
+	  	if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
        {
 				 keytime++;
 				 if(keytime>=100 )
@@ -313,7 +313,7 @@ void BTIM1_IRQHandler(void)
 			 }
 			else keytime=0;
 			 
-			if(GPIO_ReadPin(CW_GPIOB,GPIO_PIN_13)==GPIO_Pin_RESET&&Mode!=0)
+			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET&&Mode!=0)//K2存储校准
        {
 				 keytime2++;
 				 if(keytime2>=100 )
@@ -344,7 +344,7 @@ void BTIM1_IRQHandler(void)
 			 }
 			else keytime2=0; 
 			 
-			 if(GPIO_ReadPin(CW_GPIOB,GPIO_PIN_13)==GPIO_Pin_RESET)
+			 if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3退出模式
        {
 				 keytime3++;
 				 if(keytime3>=100 )

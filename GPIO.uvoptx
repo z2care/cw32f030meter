@@ -103,7 +103,7 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
-        <nTsel>0</nTsel>
+        <nTsel>6</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -114,7 +114,7 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>BIN\UL2CM3.DLL</pMon>
+        <pMon>STLink\ST-LINKIII-KEIL_SWO.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
@@ -593,7 +593,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_adc.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_adc.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_adc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -605,7 +605,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_atim.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_atim.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_atim.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -617,7 +617,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_awt.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_awt.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_awt.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -629,7 +629,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_btim.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_btim.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_btim.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -641,7 +641,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_crc.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_crc.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_crc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -653,7 +653,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_debug.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_debug.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_debug.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -665,7 +665,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_digitalsign.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_digitalsign.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_digitalsign.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -677,7 +677,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_dma.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_dma.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_dma.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -689,7 +689,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_flash.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_flash.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_flash.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -701,7 +701,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_gpio.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_gpio.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_gpio.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -713,7 +713,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_gtim.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_gtim.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_gtim.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -725,7 +725,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_i2c.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_i2c.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_i2c.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -737,7 +737,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_iwdt.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_iwdt.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_iwdt.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -749,7 +749,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_lvd.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_lvd.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_lvd.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -761,7 +761,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_pwr.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_pwr.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_pwr.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -773,7 +773,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_ram.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_ram.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_ram.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -785,7 +785,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_rcc.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_rcc.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_rcc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -797,7 +797,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_rtc.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_rtc.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_rtc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -809,7 +809,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_spi.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_spi.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_spi.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -821,7 +821,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_systick.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_systick.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_systick.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -833,7 +833,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_uart.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_uart.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_uart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -845,7 +845,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_vc.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_vc.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_vc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -857,7 +857,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\cw32f030_wwdt.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\cw32f030_wwdt.c</PathWithFileName>
       <FilenameWithoutPath>cw32f030_wwdt.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -869,7 +869,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Libraries\src\system_cw32f030.c</PathWithFileName>
+      <PathWithFileName>.\libraries\src\system_cw32f030.c</PathWithFileName>
       <FilenameWithoutPath>system_cw32f030.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -878,7 +878,7 @@
 
   <Group>
     <GroupName>HardWare</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

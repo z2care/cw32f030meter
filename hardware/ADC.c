@@ -1,21 +1,30 @@
 #include "ADC.h"
 
 uint16_t Volt_Buffer[ADC_SAMPLE_SIZE];
+uint16_t TD_Buffer[ADC_SAMPLE_SIZE];
+uint16_t JZ_Buffer[ADC_SAMPLE_SIZE];
 uint16_t Curr_Buffer[ADC_SAMPLE_SIZE];
 
+	/*
+	电压 ADCIN11->PB10->CH11
+	通断 ADCIN9 ->PB01->CH9
+	基准 ADCIN8 ->PB11->CH12
+	电流 ADCIN12->PA00->CH0
+	*/
 void ADC_init(void)
 {
     ADC_InitTypeDef     ADC_InitStructure;         //ADC配置结构体
     ADC_SerialChTypeDef ADC_SerialChStructure;     //ADC序列通道结构体
 	
-    __RCC_GPIOB_CLK_ENABLE(); //打开ADC对应引脚时钟   
+    __RCC_GPIOA_CLK_ENABLE(); //打开ADC对应引脚时钟
+    __RCC_GPIOB_CLK_ENABLE(); //打开ADC对应引脚时钟
     __RCC_ADC_CLK_ENABLE();   // 打开ADC时钟
 	
     
-    PB01_ANALOG_ENABLE();                    //使能模拟引脚
-		PB00_ANALOG_ENABLE();                   //使能模拟引脚
-		PB10_ANALOG_ENABLE();                   //使能模拟引脚
-		PB11_ANALOG_ENABLE(); 
+    PB10_ANALOG_ENABLE();                   //使能模拟引脚
+    PB01_ANALOG_ENABLE();                   //使能模拟引脚
+    PB11_ANALOG_ENABLE();                   //使能模拟引脚
+    PA00_ANALOG_ENABLE();                   //使能模拟引脚
 	
     ADC_StructInit(&ADC_InitStructure);      // ADC默认值初始化
     ADC_InitStructure.ADC_ClkDiv     = ADC_Clk_Div128; //ADC工作时钟配置 PCLK/4 = 6/4 = 1.5Mhz
@@ -27,8 +36,8 @@ void ADC_init(void)
 
    	ADC_SerialChStructure.ADC_Sqr0Chmux  = ADC_SqrCh11;      //配置ADC序列，PB01是ADC的第9通道
     ADC_SerialChStructure.ADC_Sqr1Chmux  = ADC_SqrCh9;
-   	ADC_SerialChStructure.ADC_Sqr2Chmux  = ADC_SqrCh8;      //配置ADC序列，PB01是ADC的第9通道
-    ADC_SerialChStructure.ADC_Sqr3Chmux  = ADC_SqrCh12;
+    ADC_SerialChStructure.ADC_Sqr2Chmux  = ADC_SqrCh12;      //配置ADC序列，PB01是ADC的第9通道
+    ADC_SerialChStructure.ADC_Sqr3Chmux  = ADC_SqrCh0;
     ADC_SerialChStructure.ADC_SqrEns     = ADC_SqrEns03;
     ADC_SerialChStructure.ADC_InitStruct = ADC_InitStructure; //ADC初始化
 		
@@ -41,8 +50,9 @@ void ADC_init(void)
 void Get_ADC_Value(void)
 {
 	static uint8_t cnt;
-     ADC_GetSqr0Result(&Volt_Buffer[cnt]);
-	
+  ADC_GetSqr0Result(&Volt_Buffer[cnt]);
+	//ADC_GetSqr1Result(&Volt_Buffer[cnt]);//通断暂不可用
+	ADC_GetSqr2Result(&JZ_Buffer[cnt]);
   ADC_GetSqr3Result(&Curr_Buffer[cnt]);	
 	
 	cnt++;

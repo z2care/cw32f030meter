@@ -14,17 +14,17 @@ uint8_t Seg_Reg[6] = {1,2,3,4,5,6};
 void Seg_Init(void)
 {
 	__RCC_GPIOA_CLK_ENABLE();//打开GPIOA的时钟
-	__RCC_GPIOB_CLK_ENABLE();
+	__RCC_GPIOB_CLK_ENABLE();//打开GPIOB的时钟
 	
 	GPIO_InitTypeDef GPIO_InitStruct; 
 		
-	GPIO_InitStruct.Pins = GPIO_PIN_0 | GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 | GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6 | GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_15; //PA00,E;PA04,G
+	GPIO_InitStruct.Pins = GPIO_PIN_3 | GPIO_PIN_1 | GPIO_PIN_5 | GPIO_PIN_7 | GPIO_PIN_2 | GPIO_PIN_4 | GPIO_PIN_6 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_15; 
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.IT = GPIO_IT_NONE;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_Init(CW_GPIOA, &GPIO_InitStruct);
 	
-	GPIO_InitStruct.Pins = GPIO_PIN_3 | GPIO_PIN_4; 
+	GPIO_InitStruct.Pins = GPIO_PIN_0 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
   GPIO_Init(CW_GPIOB, &GPIO_InitStruct);
 }
 
@@ -39,28 +39,28 @@ void Seg_Dis(uint8_t Pos,uint8_t Num)
       switch(i)
         {
           case 0:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_2,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA02,A
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_3,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA02,A
               break;
           case 1:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_0,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA00,B
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_1,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA00,B
               break;
           case 2:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_4,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA04,C
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_5,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA04,C
               break;
           case 3:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_6,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA06,D
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_7,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA06,D
               break;
           case 4:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_7,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA07,E
+              GPIO_WritePin(CW_GPIOB,GPIO_PIN_0,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA07,E
               break;
           case 5:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_1,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA01,F
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_2,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA01,F
               break;
           case 6:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_3,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA03,G
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_4,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA03,G
               break;
           case 7:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_5,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA05,DP
+              GPIO_WritePin(CW_GPIOA,GPIO_PIN_6,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA05,DP
               break;
           default:
               break;
@@ -70,22 +70,22 @@ void Seg_Dis(uint8_t Pos,uint8_t Num)
 	switch(Pos)
 	{
 	  case 0:
-      GPIO_WritePin(CW_GPIOA,GPIO_PIN_8,GPIO_Pin_RESET);  //PA8,COM1
+      GPIO_WritePin(CW_GPIOA,GPIO_PIN_11,GPIO_Pin_RESET);  //PA8,COM1
       break;
     case 1:
-		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_11,GPIO_Pin_RESET);  //PA9,COM2
+		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_12,GPIO_Pin_RESET);  //PA9,COM2
       break;
     case 2:
-		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_12,GPIO_Pin_RESET);  //PA10,COM3
+		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_RESET);  //PA10,COM3
       break;
 		case 3:
-		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_RESET);  //PA11,COM4
+		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_3,GPIO_Pin_RESET);  //PA11,COM4
       break;
     case 4:
-		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_3,GPIO_Pin_RESET);  //PA12,COM5
+		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_4,GPIO_Pin_RESET);  //PA12,COM5
       break;
     case 5:
-		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_4,GPIO_Pin_RESET);  //PA15,COM6
+		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_5,GPIO_Pin_RESET);  //PA15,COM6
       break;
 		default:
       break;
@@ -98,12 +98,12 @@ void Seg_Dis(uint8_t Pos,uint8_t Num)
  */
 void Close_Com(void)
 {
-  GPIO_WritePin(CW_GPIOA,GPIO_PIN_8,GPIO_Pin_SET);    
-	GPIO_WritePin(CW_GPIOB,GPIO_PIN_3,GPIO_Pin_SET);    
-	GPIO_WritePin(CW_GPIOB,GPIO_PIN_4,GPIO_Pin_SET);    
-  GPIO_WritePin(CW_GPIOA,GPIO_PIN_11,GPIO_Pin_SET);   
-	GPIO_WritePin(CW_GPIOA,GPIO_PIN_12,GPIO_Pin_SET);   
-	GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_SET);   
+  GPIO_WritePin(CW_GPIOB,GPIO_PIN_3,GPIO_Pin_SET);
+	GPIO_WritePin(CW_GPIOB,GPIO_PIN_4,GPIO_Pin_SET);
+	GPIO_WritePin(CW_GPIOB,GPIO_PIN_5,GPIO_Pin_SET);
+  GPIO_WritePin(CW_GPIOA,GPIO_PIN_11,GPIO_Pin_SET);
+	GPIO_WritePin(CW_GPIOA,GPIO_PIN_12,GPIO_Pin_SET);
+	GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_SET);
 }
 
 void DisplaySETV(uint32_t value)
