@@ -14,64 +14,76 @@ unsigned int spp_start=0;
 uint32_t ble_time=0;
 
 unsigned int timecount=0;
+unsigned int sleepcount=0;
 
-//5VÓë15V Ğ£×¼
+//5Vä¸15V æ ¡å‡†
 unsigned int X05=0;
 unsigned int X15=0;
 
 unsigned int Y15=15;
 unsigned int Y05=5;
-float K; //Ğ±ÂÊ
+float K; //æ–œç‡
 
 
-//0.5AÓë1.5A Ğ£×¼
+//0.5Aä¸1.5A æ ¡å‡†
 unsigned int IX05=0;
 unsigned int IX15=0;
 
 unsigned int IY15=150;
 unsigned int IY05=50;
-float KI; //Ğ±ÂÊ
+float KI; //æ–œç‡
 
-//¶¨ÒåÄ£Ê½
-unsigned char Mode=0;
-unsigned char displaymode = 0;
-//mode0 :µçÑ¹µçÁ÷³£¹æÏÔÊ¾Ä£Ê½
-//mode1 :µçÑ¹5VĞ£×¼
-//mode2 :µçÑ¹15VĞ£×¼
-//mode3 :µçÁ÷0.5AĞ£×¼
-//mode4 :µçÁ÷1.5AĞ£×¼
+//å®šä¹‰æ¨¡å¼
+// mode 0: TEST.VO,tu-
+// mode 1: TEST.CU,tc-
+// mode 2: CAL.I05,ci5.
+// mode 3: CAL.I15,ciF.
+// mode 4: CAL.U05,cu5.
+// mode 5: CAL.U15,cuF.
+typedef enum
+{
+    TEST_MODE_VO = 0,
+	TEST_MODE_CU,
+	CALI_MODE_U05,
+	CALI_MODE_U15,
+	CALI_MODE_I05,
+	CALI_MODE_I15,
+	MODE_END
+} Select_Mode;
+
+uint8_t currentMode = TEST_MODE_VO;//initial mode
 
 unsigned char BrushFlag=0;  
 
 void RCC_Configuration(void)
 {
-  /* 0. HSIÊ¹ÄÜ²¢Ğ£×¼ */
+  /* 0. HSIä½¿èƒ½å¹¶æ ¡å‡† */
   RCC_HSI_Enable(RCC_HSIOSC_DIV6);
 
-  /* 1. ÉèÖÃHCLKºÍPCLKµÄ·ÖÆµÏµÊı¡¡*/
+  /* 1. è®¾ç½®HCLKå’ŒPCLKçš„åˆ†é¢‘ç³»æ•°ã€€*/
   RCC_HCLKPRS_Config(RCC_HCLK_DIV1);
   RCC_PCLKPRS_Config(RCC_PCLK_DIV1);
   
-  /* 2. Ê¹ÄÜPLL£¬Í¨¹ıPLL±¶Æµµ½48MHz */
-  RCC_PLL_Enable(RCC_PLLSOURCE_HSI, 8000000, 6);     // HSI Ä¬ÈÏÊä³öÆµÂÊ8MHz
- // RCC_PLL_OUT();  //PC13½ÅÊä³öPLLÊ±ÖÓ
+  /* 2. ä½¿èƒ½PLLï¼Œé€šè¿‡PLLå€é¢‘åˆ°48MHz */
+  RCC_PLL_Enable(RCC_PLLSOURCE_HSI, 8000000, 6);     // HSI é»˜è®¤è¾“å‡ºé¢‘ç‡8MHz
+ // RCC_PLL_OUT();  //PC13è„šè¾“å‡ºPLLæ—¶é’Ÿ
   
-  ///< µ±Ê¹ÓÃµÄÊ±ÖÓÔ´HCLK´óÓÚ24M,Ğ¡ÓÚµÈÓÚ48MHz£ºÉèÖÃFLASH ¶ÁµÈ´ıÖÜÆÚÎª2 cycle
-  ///< µ±Ê¹ÓÃµÄÊ±ÖÓÔ´HCLK´óÓÚ48MHz£ºÉèÖÃFLASH ¶ÁµÈ´ıÖÜÆÚÎª3 cycle
+  ///< å½“ä½¿ç”¨çš„æ—¶é’ŸæºHCLKå¤§äº24M,å°äºç­‰äº48MHzï¼šè®¾ç½®FLASH è¯»ç­‰å¾…å‘¨æœŸä¸º2 cycle
+  ///< å½“ä½¿ç”¨çš„æ—¶é’ŸæºHCLKå¤§äº48MHzï¼šè®¾ç½®FLASH è¯»ç­‰å¾…å‘¨æœŸä¸º3 cycle
   __RCC_FLASH_CLK_ENABLE();
   FLASH_SetLatency(FLASH_Latency_2);
     
-  /* 3. Ê±ÖÓÇĞ»»µ½PLL */
+  /* 3. æ—¶é’Ÿåˆ‡æ¢åˆ°PLL */
   RCC_SysClk_Switch(RCC_SYSCLKSRC_PLL);
   RCC_SystemCoreClockUpdate(48000000);
-	RCC_PCLKPRS_Config(RCC_PCLK_DIV8); //ÅäÖÃHCLK µ½ PCLKµÄ·ÖÆµÏµÊı  6MHz
+	RCC_PCLKPRS_Config(RCC_PCLK_DIV8); //é…ç½®HCLK åˆ° PCLKçš„åˆ†é¢‘ç³»æ•°  6MHz
 }
 
 
 void KEYGPIO_Init(void)
 {
-	__RCC_GPIOA_CLK_ENABLE();//´ò¿ªGPIOBµÄÊ±ÖÓ
-	__RCC_GPIOC_CLK_ENABLE();//´ò¿ªGPIOCµÄÊ±ÖÓ
+	__RCC_GPIOA_CLK_ENABLE();//æ‰“å¼€GPIOBçš„æ—¶é’Ÿ
+	__RCC_GPIOC_CLK_ENABLE();//æ‰“å¼€GPIOCçš„æ—¶é’Ÿ
 	GPIO_InitTypeDef GPIO_InitStruct;
 		
 	GPIO_InitStruct.Pins = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10; //K1 K2 K3
@@ -89,44 +101,24 @@ void KEYGPIO_Init(void)
 extern void DisplaySETV(uint32_t value);
 void DisplayBuff(void)
 {
-  if(Mode==0)
-  {
-	 Display(V_Buffer);
-
-	 if(I_Buffer>400)I_Buffer=400;
-	 DisplayI(I_Buffer);
-	}		
-	else if(Mode==1) //S.05.
+	DisplayMode(currentMode);
+	switch(currentMode)
 	{
-		Seg_Reg[0] =5+10;
-		Seg_Reg[1] =0;
-		Seg_Reg[2]=5+10;
-		DisplaySETV(V_Buffer);
-	}
-	else if(Mode==2) //S.15.
-	{
-		Seg_Reg[0] =5+10;
-		Seg_Reg[1] =1;
-		Seg_Reg[2]=5+10;
-		DisplaySETV(V_Buffer);
-	}
-	else if(Mode==3) //A.0.5
-	{
-		Seg_Reg[0] =20;
-		Seg_Reg[1] =0+10;
-		Seg_Reg[2]=5;
-		DisplayI(I_Buffer);
-	}
-	else if(Mode==4) //A.1.5
-	{
-		Seg_Reg[0] =20;
-		Seg_Reg[1] =1+10;
-		Seg_Reg[2]=5;
-		DisplayI(I_Buffer);
-	}else if(Mode==5)
-	{
-
-		DisplayMode(displaymode);
+		case TEST_MODE_VO:
+			Display(V_Buffer);
+			break;
+		case TEST_MODE_CU:
+			if(I_Buffer>400)I_Buffer=400;
+			DisplayI(I_Buffer);
+			break;
+		case CALI_MODE_U05:
+		case CALI_MODE_U15:
+			DisplaySETV(V_Buffer);
+			break;
+		case CALI_MODE_I05:
+		case CALI_MODE_I15:
+			DisplayI(I_Buffer);
+			break;
 	}
 }
 
@@ -158,7 +150,7 @@ void read_vol_cur_calibration(void)
 {
     uint16_t da[5];
     flash_read(0,da, 5);
-	  if(da[0]!=0xaa)//»¹Ã»Ğ£×¼¹ıÊ±£¬¼ÆËãÀíÂÛÖµ£¬²¢´æ´¢
+	  if(da[0]!=0xaa)//è¿˜æ²¡æ ¡å‡†è¿‡æ—¶ï¼Œè®¡ç®—ç†è®ºå€¼ï¼Œå¹¶å­˜å‚¨
 		{
 			X15=15.0/23/1.5*4096;
 			X05=5.0/23/1.5*4096;
@@ -177,9 +169,11 @@ void read_vol_cur_calibration(void)
 }
 
 void Volt_Cal(void);
+// pwm beep
+// 5306å”¤é†’
 int main()
 {	
-	RCC_Configuration();   //ÏµÍ³Ê±ÖÓ64M
+	RCC_Configuration();   //ç³»ç»Ÿæ—¶é’Ÿ64M
 	KEYGPIO_Init();
 	GPIO_WritePin(CW_GPIOC,GPIO_PIN_13,GPIO_Pin_RESET); 
 	Seg_Init();
@@ -191,22 +185,27 @@ int main()
 	while(1)
 	{ 
 		if(BrushFlag==1)
-			{
-				DisplayBuff();
-				BrushFlag=0;
-			}
+		{
+			DisplayBuff();
+			BrushFlag=0;
+		}
 			
-			if(timecount>= 300)     //300ms¸Ä±äÒ»´ÎÊıÂë¹ÜÏÔÊ¾Öµ//	
-			{
-				timecount=0;
-				Volt_Cal();
-				BrushFlag=1;
-			}			
+		if(timecount>= 300)     //300msæ”¹å˜ä¸€æ¬¡æ•°ç ç®¡æ˜¾ç¤ºå€¼//	
+		{
+			timecount=0;
+			Volt_Cal();
+			BrushFlag=1;
+		}
+		if(sleepcount>=60000)//1åˆ†é’Ÿåä¼‘çœ 
+		{// å®šæ—¶ä¼‘çœ 
+			_WFI();
+			sleepcount=0;
+		}
 	}
 }
 
 
-uint32_t Mean_Value_Filter(uint16_t *value, uint32_t size)     //¾ùÖµÂË²¨
+uint32_t Mean_Value_Filter(uint16_t *value, uint32_t size)     //å‡å€¼æ»¤æ³¢
 {
     uint32_t sum = 0;
     uint16_t max = 0;
@@ -227,7 +226,7 @@ uint32_t Mean_Value_Filter(uint16_t *value, uint32_t size)     //¾ùÖµÂË²¨
     }
     sum -= max + min;
     sum  = sum / (size - 2);
-		//if(sum>1)sum+=4; ºóÆÚĞ£×¼
+		//if(sum>1)sum+=4; åæœŸæ ¡å‡†
     return sum;
 }
 
@@ -235,8 +234,8 @@ void Volt_Cal(void)
 { 	
 	float t,KT1;
 	
-	V_Buffer = Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);//Ê¹ÓÃ¾ùÖµÂË²¨
-	I_Buffer = Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE); //Ê¹ÓÃ¾ùÖµÂË²¨
+	V_Buffer = Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);//ä½¿ç”¨å‡å€¼æ»¤æ³¢
+	I_Buffer = Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE); //ä½¿ç”¨å‡å€¼æ»¤æ³¢
 	
 	if(V_Buffer>=X05)
 	{
@@ -248,10 +247,10 @@ void Volt_Cal(void)
 		KT1=KT1/X05;
 		V_Buffer=KT1*V_Buffer;
 	}
-	// ËÄÉáÎåÈë
+	// å››èˆäº”å…¥
     if(V_Buffer % 10 >= 5)
     {
-        V_Buffer = V_Buffer / 10 + 1;  //10mVÎªµ¥Î»
+        V_Buffer = V_Buffer / 10 + 1;  //10mVä¸ºå•ä½
     }
     else
     {
@@ -297,83 +296,74 @@ void BTIM1_IRQHandler(void)
     BTIM_ClearITPendingBit(CW_BTIM1, BTIM_IT_OV);
     Get_ADC_Value();
 		
-		ledcount++;  //LEDÉÁ
-		if(ledcount>=1000)
-		{PC13_TOG();ledcount=0;}
+	ledcount++;  //LEDé—ª
+	if(ledcount>=1000)
+	{PC13_TOG();ledcount=0;}
 		
 		
 		timecount++;
+		sleepcount++;
 		if(Mode == 5)
-			Dis_Refresh2();
-		else
-    Dis_Refresh();//ÊıÂë¹ÜÉ¨ÃèÏÔÊ¾
+			Dis_Refresh();//æ•°ç ç®¡æ‰«ææ˜¾ç¤º
 		
 		
-	  	if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1ÇĞ»»Ä£Ê½
-       {
-				 keytime++;
-				 if(keytime>=100 )
-				 {
-					  keytime=0;  //ÇĞ»»Ä£Ê½
-						Mode++;
-						if(Mode>=5)Mode=0;
-						BrushFlag=1; //¸üĞÂÊıÂë¹Ü
-				 }			 
-			 }
-			else keytime=0;
+	  	if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1åˆ‡æ¢æ¨¡å¼
+        {
+			keytime++;
+			sleepcount = 0;//æœ‰æŒ‰é”®ï¼Œé‡æ–°è®¡æ—¶
+			if(keytime>=100 )
+			{
+				keytime=0;  //åˆ‡æ¢æ¨¡å¼
+				Mode++;
+				if(Mode>=5)Mode=0;
+				BrushFlag=1; //æ›´æ–°æ•°ç ç®¡
+			}			 
+		}
+		else keytime=0;
 			 
-			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET&&Mode!=0)//K2´æ´¢Ğ£×¼
-       {
-				 keytime2++;
-				 if(keytime2>=100 )
-				 {
-					  keytime2=0;  //ÇĞ»»Ä£Ê½
-					
-					  if(Mode==1)
-						 {
-							 X05=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
-							 save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
-						 }
-						 if(Mode==2)
-						 {
-							 X15=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
-							 save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
-						 }
-						 if(Mode==3)
-						 {
-							 IX05=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
-							 save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
-						 }
-						 if(Mode==4)
-						 {
-							 IX15=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
-							 save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
-						 }						 					 
-				 }			 
-			 }
-			else keytime2=0; 
+		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET&&Mode!=0)//K2å­˜å‚¨æ ¡å‡†
+        {
+			keytime2++;
+			sleepcount = 0;//æœ‰æŒ‰é”®ï¼Œé‡æ–°è®¡æ—¶
+			if(keytime2>=100 )
+			{
+				keytime2=0;  //åˆ‡æ¢æ¨¡å¼
+			
+				if(Mode==1)
+				{
+					X05=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
+					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
+				}
+				if(Mode==2)
+				{
+					X15=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
+					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
+				}
+				if(Mode==3)
+				{
+					IX05=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
+					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
+				}
+				if(Mode==4)
+				{
+					IX15=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
+					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
+				}						 					 
+			}			 
+		}
+		else keytime2=0; 
 			 
-			 if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3ÍË³öÄ£Ê½
-       {
-				 keytime3++;
-				 if(keytime3>=100 )
-				 {
-					  keytime3=0;  //ÇĞ»»Ä£Ê½
-						Mode=5;
-					 displaymode++;
-					 		if(displaymode>8)
-			displaymode=0;
-					 
-						BrushFlag=1; //¸üĞÂÊıÂë¹Ü
-				 }			 
-			 }
-			else keytime3=0;			 
+		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3é€€å‡ºæ¨¡å¼
+        {
+				keytime3++;
+				sleepcount = 0;//æœ‰æŒ‰é”®ï¼Œé‡æ–°è®¡æ—¶
+				if(keytime3>=100 )
+				{
+					keytime3=0;  //åˆ‡æ¢æ¨¡å¼
+					BrushFlag=1; //æ›´æ–°æ•°ç ç®¡
+				}			 
+		}
+		else keytime3=0;			 
   }
   /* USER CODE END */
 }
-
-
-
-
-
-
