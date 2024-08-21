@@ -1,6 +1,6 @@
 #include "Seg_Dis.h"
 
-/*  ¹²ÒõÊıÂë¹Ü±àÂë±í£º
+/*  å…±é˜´æ•°ç ç®¡ç¼–ç è¡¨ï¼š
  0x3f   0x06   0x5b  0x4f  0x66  0x6d  0x7d  0x07  0x7f  0x6f 
   0      1      2     3     4     5     6     7     8     9 
  0xbf   0x86   0xdb  0xcf  0xe6  0xed  0xfd  0x87  0xff  0xef           
@@ -37,8 +37,8 @@ uint8_t Seg_Reg[6] = {1,2,3,4,5,6};
 
 void Seg_Init(void)
 {
-	__RCC_GPIOA_CLK_ENABLE();//´ò¿ªGPIOAµÄÊ±ÖÓ
-	__RCC_GPIOB_CLK_ENABLE();//´ò¿ªGPIOBµÄÊ±ÖÓ
+	__RCC_GPIOA_CLK_ENABLE();//æ‰“å¼€GPIOAçš„æ—¶é’Ÿ
+	__RCC_GPIOB_CLK_ENABLE();//æ‰“å¼€GPIOBçš„æ—¶é’Ÿ
 	
 	GPIO_InitTypeDef GPIO_InitStruct; 
 		
@@ -52,74 +52,19 @@ void Seg_Init(void)
   GPIO_Init(CW_GPIOB, &GPIO_InitStruct);
 }
 
-void Seg_Dis(uint8_t Pos,uint8_t Num)
+/*
+å¦ä¸€è¾¹æ˜¾ç¤ºæ•°ç ç®¡æ•°æ®
+Posç¬¬å‡ ä½
+Numè¡¨ä¸­ç¬¬å‡ ä¸ªæ•°
+inTabåœ¨ç¬¬å‡ ä¸ªè¡¨ï¼Œé»˜è®¤è¡¨1
+*/
+void Seg_Dis(uint8_t Pos,uint8_t Num, uint8_t inTab=1)
 {
 	int i;
 	uint8_t Dis_Value;
+	if(inTab == 1)
 	Dis_Value = Seg_Table[Num];
-	
-	for(i = 0; i < 8; i++)
-	{
-      switch(i)
-        {
-          case 0:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_3,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA02,A
-              break;
-          case 1:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_1,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA00,B
-              break;
-          case 2:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_5,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA04,C
-              break;
-          case 3:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_7,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA06,D
-              break;
-          case 4:
-              GPIO_WritePin(CW_GPIOB,GPIO_PIN_0,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA07,E
-              break;
-          case 5:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_2,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA01,F
-              break;
-          case 6:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_4,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA03,G
-              break;
-          case 7:
-              GPIO_WritePin(CW_GPIOA,GPIO_PIN_6,(GPIO_PinState)((Dis_Value >> i) & 0x01));    //PA05,DP
-              break;
-          default:
-              break;
-				}
-	}
-	
-	switch(Pos)
-	{
-	  case 0:
-      GPIO_WritePin(CW_GPIOA,GPIO_PIN_11,GPIO_Pin_RESET);  //PA8,COM1
-      break;
-    case 1:
-		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_12,GPIO_Pin_RESET);  //PA9,COM2
-      break;
-    case 2:
-		  GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_RESET);  //PA10,COM3
-      break;
-		case 3:
-		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_3,GPIO_Pin_RESET);  //PA11,COM4
-      break;
-    case 4:
-		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_4,GPIO_Pin_RESET);  //PA12,COM5
-      break;
-    case 5:
-		  GPIO_WritePin(CW_GPIOB,GPIO_PIN_5,GPIO_Pin_RESET);  //PA15,COM6
-      break;
-		default:
-      break;
-	}
-}
-
-void Seg_Dis2(uint8_t Pos,uint8_t Num)
-{
-	int i;
-	uint8_t Dis_Value;
+	else
 	Dis_Value = Seg_Table2[Num];
 	
 	for(i = 0; i < 8; i++)
@@ -181,7 +126,7 @@ void Seg_Dis2(uint8_t Pos,uint8_t Num)
 }
 
 /**
- * @brief ¹Ø±ÕËùÓĞ¹«¹²¶Ë
+ * @brief å…³é—­æ‰€æœ‰å…¬å…±ç«¯
  * 
  */
 void Close_Com(void)
@@ -195,16 +140,16 @@ void Close_Com(void)
 }
 
 /*
-mode 0: TEST.VO
-mode 1: TEST.CU
-mode 2: TEST.-O
-mode 3: CAL.I05
-mode 4: CAL.I15
-mode 5: CAL.2U5
-mode 6: CAL.U05
-mode 7: CAL.U15
+mode 0: TEST.VO,tu-
+mode 1: TEST.CU,tc-
+mode 2: TEST.-O,tb-
+mode 3: CAL.I05,cI5.
+mode 4: CAL.I15,cIF.
+mode 5: CAL.2U5,cUb.
+mode 6: CAL.U05,cU5.
+mode 7: CAL.U15,cUF.
 */
-/*
+/*-bcituIU5F 5. b. F.
 0   t:defg:78
 1   E:adefg:79
 2   S=5:acdfg:6D
@@ -221,99 +166,60 @@ mode 7: CAL.U15
 13  1:bc:06
 14  2:abdeg:5b
 */
-void DisplayMode(uint32_t value)
+//ä¸€éé…ç½®å¥½MODEçš„æ•°ç ç®¡æ•°æ®ï¼ŒæŒ‰ç…§è¡¨2
+/*
+    TEST_MODE_VO = 0,
+	TEST_MODE_CU,
+	TEST_MODE_IO,//unused
+	CALI_MODE_2U5,
+	CALI_MODE_U05,
+	CALI_MODE_U15,
+	CALI_MODE_I05,
+	CALI_MODE_I15,
+	*/
+void DisplayMode(Select_Mode value)
 {
-  switch(value)
+	switch(value)
 	{
-		case 0://tESt.Uo
-			Seg_Reg[0] = 0;
-			Seg_Reg[1] = 1;
-			Seg_Reg[2] = 2;
-			Seg_Reg[3] = 7;
-			Seg_Reg[4] = 3;
-			Seg_Reg[5] = 4;
-			break;
-		case 1://tESt.Cu
-			Seg_Reg[0] = 0;
-			Seg_Reg[1] = 1;
-			Seg_Reg[2] = 2;
-			Seg_Reg[3] = 7;
-			Seg_Reg[4] = 5;
-			Seg_Reg[5] = 6;
-			break;
-		case 2://TEST.-O
-			Seg_Reg[0] = 0;
-			Seg_Reg[1] = 1;
-			Seg_Reg[2] = 2;
-			Seg_Reg[3] = 7;
-			Seg_Reg[4] = 8;
-			Seg_Reg[5] = 12;
-			break;
-		case 3://CAL.I05
-			Seg_Reg[0] = 5;
-			Seg_Reg[1] = 9;
-			Seg_Reg[2] = 10;
-			Seg_Reg[3] = 11;
-			Seg_Reg[4] = 12;
-			Seg_Reg[5] = 2;
-			break;
-		case 4://CAL.I15
-			Seg_Reg[0] = 5;
-			Seg_Reg[1] = 9;
-			Seg_Reg[2] = 10;
-			Seg_Reg[3] = 11;
-			Seg_Reg[4] = 13;
-			Seg_Reg[5] = 2;
-			break;
-		case 5://CAL.2U5
-			Seg_Reg[0] = 5;
-			Seg_Reg[1] = 9;
-			Seg_Reg[2] = 10;
-			Seg_Reg[3] = 14;
-			Seg_Reg[4] = 3;
-			Seg_Reg[5] = 2;
-			break;
-		case 6://CAL.U05
-			Seg_Reg[0] = 5;
-			Seg_Reg[1] = 9;
-			Seg_Reg[2] = 10;
-			Seg_Reg[3] = 3;
-			Seg_Reg[4] = 12;
-			Seg_Reg[5] = 2;
-			break;
-		case 7://CAL.U15
-			Seg_Reg[0] = 5;
-			Seg_Reg[1] = 9;
-			Seg_Reg[2] = 10;
-			Seg_Reg[3] = 3;
-			Seg_Reg[4] = 13;
-			Seg_Reg[5] = 2;
-			break;
-		default:
-			break;
+		case TEST_MODE_VO:
+		break;
+		case TEST_MODE_CU:
+		break;
+		case TEST_MODE_IO:
+		break;
+		case CALI_MODE_2U5:
+		break;
+		case CALI_MODE_U05:
+		break;
+		case CALI_MODE_U15:
+		break;
+		case CALI_MODE_I05:
+		break;
+		case CALI_MODE_I15:
+		break;
 	}
-	
-}
 
+}
+//ä¸€è¾¹é…ç½®å¥½6ä½æ•°ç ç®¡æ•°æ®ï¼ŒæŒ‰ç…§è¡¨1
 void DisplaySETV(uint32_t value)
 {
 	uint8_t Thousands;
   uint8_t Hundreds;
   uint8_t Tens;
-  uint8_t Units; // ¸öÎ»Êı
+  uint8_t Units; // ä¸ªä½æ•°
 	
 	Thousands = value / 1000;
 	 if(Thousands > 0)
     {
        Units     = value % 10;
-       value     = Units > 5 ? (value + 10) : value; // ¸ù¾İºóÒ»Î»ËÄÉáÎåÈë
+       value     = Units > 5 ? (value + 10) : value; // æ ¹æ®åä¸€ä½å››èˆäº”å…¥
        Thousands = value / 1000 % 10;
        Hundreds  = value / 100 % 10;
        Tens      = value / 10 % 10;
 			
-       // ÏÔÊ¾xx.x·ü
+       // æ˜¾ç¤ºxx.xä¼
        Seg_Reg[3] = Thousands;
-       Seg_Reg[4] = Hundreds + 10; // ¼ÓdpÏÔÊ¾
+       Seg_Reg[4] = Hundreds + 10; // åŠ dpæ˜¾ç¤º
        Seg_Reg[5] = Tens;
 		}
 		
@@ -323,32 +229,32 @@ void DisplaySETV(uint32_t value)
 	     Tens      = value / 10 % 10;
        Hundreds  = value / 100 % 10;
 	     
-			 // ÏÔÊ¾x.xx·ü
-	     Seg_Reg[3] = Hundreds + 10;              // ¼ÓdpÏÔÊ¾
+			 // æ˜¾ç¤ºx.xxä¼
+	     Seg_Reg[3] = Hundreds + 10;              // åŠ dpæ˜¾ç¤º
 	     Seg_Reg[4] = Tens;
 	     Seg_Reg[5] = Units;
 	   }
 }
-
+//ä¸€è¾¹é…ç½®å¥½6ä½æ•°ç ç®¡æ•°æ®ï¼ŒæŒ‰ç…§è¡¨1
 void Display(uint32_t value)
 {
 	uint8_t Thousands;
   uint8_t Hundreds;
   uint8_t Tens;
-  uint8_t Units; // ¸öÎ»Êı
+  uint8_t Units; // ä¸ªä½æ•°
 	
 	Thousands = value / 1000;
 	 if(Thousands > 0)
     {
        Units     = value % 10;
-       value     = Units > 5 ? (value + 10) : value; // ¸ù¾İºóÒ»Î»ËÄÉáÎåÈë
+       value     = Units > 5 ? (value + 10) : value; // æ ¹æ®åä¸€ä½å››èˆäº”å…¥
        Thousands = value / 1000 % 10;
        Hundreds  = value / 100 % 10;
        Tens      = value / 10 % 10;
 			
-       // ÏÔÊ¾xx.x·ü
+       // æ˜¾ç¤ºxx.xä¼
        Seg_Reg[0] = Thousands;
-       Seg_Reg[1] = Hundreds + 10; // ¼ÓdpÏÔÊ¾
+       Seg_Reg[1] = Hundreds + 10; // åŠ dpæ˜¾ç¤º
        Seg_Reg[2] = Tens;
 		}
 		
@@ -358,46 +264,37 @@ void Display(uint32_t value)
 	     Tens      = value / 10 % 10;
        Hundreds  = value / 100 % 10;
 	     
-			 // ÏÔÊ¾x.xx·ü
-	     Seg_Reg[0] = Hundreds + 10;              // ¼ÓdpÏÔÊ¾
+			 // æ˜¾ç¤ºx.xxä¼
+	     Seg_Reg[0] = Hundreds + 10;              // åŠ dpæ˜¾ç¤º
 	     Seg_Reg[1] = Tens;
 	     Seg_Reg[2] = Units;
 	   }
 }
-
+//ä¸€è¾¹é…ç½®å¥½6ä½æ•°ç ç®¡æ•°æ®ï¼ŒæŒ‰ç…§è¡¨1
 void DisplayI(uint32_t value)
 {
-	     Seg_Reg[3] = value/100 + 10;// ¼ÓdpÏÔÊ¾
+	     Seg_Reg[3] = value/100 + 10;// åŠ dpæ˜¾ç¤º
        Seg_Reg[4] = value%100/10; 
        Seg_Reg[5] = value%10;	
 }
 
 /**
- * @brief ÊıÂë¹ÜÉ¨ÃèÏÔÊ¾º¯Êı,¶¨Ê±Æ÷ÖÜÆÚĞÔµ÷ÓÃ
- *
+ * @brief æ•°ç ç®¡æ‰«ææ˜¾ç¤ºå‡½æ•°,å®šæ—¶å™¨å‘¨æœŸæ€§è°ƒç”¨
+ *è§¦å‘æ˜¾ç¤ºçš„ä½ç½®ï¼ŒæŒ‡å®štableï¼Œé»˜è®¤1
  */
-void Dis_Refresh(void)
+void Dis_Refresh(uint8_t intab=1)
 {
   static uint8_t num = 0;
 
-	Close_Com();//ÏÈ¹Ø±Õ¹«¹²¶Ë,·ÀÖ¹ÖØÓ°
+	Close_Com();//å…ˆå…³é—­å…¬å…±ç«¯,é˜²æ­¢é‡å½±
+	if(intab==1)
 	Seg_Dis(num,Seg_Reg[num]);
+	else
+	Seg_Dis(num2,Seg_Reg[num2],2);//ä½¿ç”¨table2
 	num++;
   if(num > 6)
   {
     num = 0;
   }
 }
-
-void Dis_Refresh2(void)
-{
-  static uint8_t num2 = 0;
-
-	Close_Com();//ÏÈ¹Ø±Õ¹«¹²¶Ë,·ÀÖ¹ÖØÓ°
-	Seg_Dis2(num2,Seg_Reg[num2]);
-	num2++;
-  if(num2 > 6)
-  {
-    num2 = 0;
-  }
 }
