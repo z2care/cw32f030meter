@@ -173,7 +173,7 @@ void GPIOA_IRQHandler(void)
     if (REGBITS_GET(CW_GPIOA->ISR, GPIOx_ISR_PIN10_Msk) > 0)
     {
         gKeyStatus = 1;
-        //Çå³ýCW_GPIOÖÐ¶Ï±êÖ¾
+        //清除CW_GPIO中断标志
         GPIOA_INTFLAG_CLR(GPIOx_ICR_PIN10_Msk);
     }
   /* USER CODE END */
