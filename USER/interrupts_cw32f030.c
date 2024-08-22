@@ -170,7 +170,12 @@ void RCC_IRQHandler(void)
 void GPIOA_IRQHandler(void)
 {
   /* USER CODE BEGIN */
-
+    if (REGBITS_GET(CW_GPIOA->ISR, GPIOx_ISR_PIN10_Msk) > 0)
+    {
+        gKeyStatus = 1;
+        //Çå³ýCW_GPIOÖÐ¶Ï±êÖ¾
+        GPIOA_INTFLAG_CLR(GPIOx_ICR_PIN10_Msk);
+    }
   /* USER CODE END */
 }
 
