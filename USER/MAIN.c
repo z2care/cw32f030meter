@@ -5,16 +5,37 @@
 #include "ADC.h"
 #include "flash.h"
 
+#ifdef __GNUC__
+    /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+    set to 'Yes') calls __io_putchar() */
+    #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+    #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+/**
+ * @brief Retargets the C library printf function to the USART.
+ *
+ */
+PUTCHAR_PROTOTYPE
+{
+    USART_SendData_8bit(CW_UART3, (uint8_t)ch);
+
+    while (USART_GetFlagStatus(CW_UART3, USART_FLAG_TXE) == RESET);
+
+    return ch;
+}
+
 extern uint16_t Volt_Buffer[ADC_SAMPLE_SIZE];
 extern uint16_t Curr_Buffer[ADC_SAMPLE_SIZE];
 extern uint8_t Seg_Reg[6];
 uint16_t V_Buffer,I_Buffer;
 
-unsigned int spp_start=0;
-uint32_t ble_time=0;
+volatile uint8_t gKeyStatus;  /* set to 1 after User Button interrupt  */
 
 unsigned int timecount=0;
 unsigned int sleepcount=0;
+uint8_t enterDeep = 0;
 
 //5V与15V 校准
 unsigned int X05=0;
@@ -36,18 +57,18 @@ float KI; //斜率
 //定义模式
 // mode 0: TEST.VO,tu-
 // mode 1: TEST.CU,tc-
-// mode 2: CAL.I05,ci5.
-// mode 3: CAL.I15,ciF.
-// mode 4: CAL.U05,cu5.
-// mode 5: CAL.U15,cuF.
+// mode 2: CAL.U05,cU5.
+// mode 3: CAL.U15,cUF.
+// mode 2: CAL.I05,c0.5
+// mode 5: CAL.I15,c1.5
 typedef enum
 {
     TEST_MODE_VO = 0,
 	TEST_MODE_CU,
 	CALI_MODE_U05,
 	CALI_MODE_U15,
-	CALI_MODE_I05,
-	CALI_MODE_I15,
+	CALI_MODE_I0P5,
+	CALI_MODE_I1P5,
 	MODE_END
 } Select_Mode;
 
@@ -79,22 +100,57 @@ void RCC_Configuration(void)
 	RCC_PCLKPRS_Config(RCC_PCLK_DIV8); //配置HCLK 到 PCLK的分频系数  6MHz
 }
 
+void UART3_Init(void)
+{
+	__RCC_GPIOA_CLK_ENABLE();//打开GPIOA的时钟
+	__RCC_UART3_CLK_ENABLE();//打开UART3的时钟
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+    //UART TX RX 复用
+	PA06_AFx_UART1TXD();
+	PA07_AFx_UART1RXD();
+    GPIO_InitStructure.Pins = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    GPIO_Init(CW_GPIOA, &GPIO_InitStructure);
+
+    USART_InitTypeDef USART_InitStructure;
+    USART_InitStructure.USART_BaudRate = 9600;//DEBUG_USART_BaudRate;
+    USART_InitStructure.USART_Over = USART_Over_16;
+    USART_InitStructure.USART_Source = USART_Source_PCLK;
+    USART_InitStructure.USART_UclkFreq = 8000000;//DEBUG_USART_UclkFreq;
+    USART_InitStructure.USART_StartBit = USART_StartBit_FE;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No ;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(CW_UART3, &USART_InitStructure);
+
+}
 
 void KEYGPIO_Init(void)
 {
-	__RCC_GPIOA_CLK_ENABLE();//打开GPIOB的时钟
+	__RCC_GPIOA_CLK_ENABLE();//打开GPIOA的时钟
 	__RCC_GPIOC_CLK_ENABLE();//打开GPIOC的时钟
 	GPIO_InitTypeDef GPIO_InitStruct;
 		
-	GPIO_InitStruct.Pins = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10; //K1 K2 K3
+	GPIO_InitStruct.Pins = GPIO_PIN_8|GPIO_PIN_9; //K1 K2
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT_PULLUP;
   GPIO_InitStruct.IT = GPIO_IT_NONE;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_Init(CW_GPIOA, &GPIO_InitStruct);
-	
+
+  	GPIO_InitStruct.Pins = GPIO_PIN_10;//K3
+	GPIO_InitStruct.IT = GPIO_IT_FALLING;
+	GPIO_Init(CW_GPIOA, &GPIO_InitStruct);
+	NVIC_SetPriority(GPIOA_IRQn, 0x03);
+    //清除中断标志并使能NVIC
+    GPIOA_INTFLAG_CLR(GPIOx_ICR_PIN10_Msk);
+    NVIC_EnableIRQ(GPIOA_IRQn);
 	
 	GPIO_InitStruct.Pins = GPIO_PIN_13; //LED
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.IT = GPIO_IT_NONE;
   GPIO_Init(CW_GPIOC, &GPIO_InitStruct);
 }
 
@@ -105,7 +161,7 @@ void DisplayBuff(void)
 	switch(currentMode)
 	{
 		case TEST_MODE_VO:
-			Display(V_Buffer);
+			DisplaySETV(V_Buffer);
 			break;
 		case TEST_MODE_CU:
 			if(I_Buffer>400)I_Buffer=400;
@@ -115,8 +171,8 @@ void DisplayBuff(void)
 		case CALI_MODE_U15:
 			DisplaySETV(V_Buffer);
 			break;
-		case CALI_MODE_I05:
-		case CALI_MODE_I15:
+		case CALI_MODE_I0P5:
+		case CALI_MODE_I1P5:
 			DisplayI(I_Buffer);
 			break;
 	}
@@ -169,8 +225,7 @@ void read_vol_cur_calibration(void)
 }
 
 void Volt_Cal(void);
-// pwm beep
-// 5306唤醒
+
 int main()
 {	
 	RCC_Configuration();   //系统时钟64M
@@ -195,11 +250,6 @@ int main()
 			timecount=0;
 			Volt_Cal();
 			BrushFlag=1;
-		}
-		if(sleepcount>=60000)//1分钟后休眠
-		{// 定时休眠
-			_WFI();
-			sleepcount=0;
 		}
 	}
 }
@@ -256,6 +306,7 @@ void Volt_Cal(void)
     {
         V_Buffer = V_Buffer / 10;
     }
+	printf("%d\r\n",V_Buffer);
 		
 		
 	if(I_Buffer>=IX05)
@@ -288,63 +339,68 @@ void Volt_Cal(void)
 
 void BTIM1_IRQHandler(void)
 {
-  static uint32_t keytime=0,keytime2=0,keytime3=0,ledcount=0;
+  	static uint32_t keytime=0,keytime2=0,keytime3=0,ledcount=0;
 	
-  /* USER CODE BEGIN */
-  if (BTIM_GetITStatus(CW_BTIM1, BTIM_IT_OV))
-  {
-    BTIM_ClearITPendingBit(CW_BTIM1, BTIM_IT_OV);
-    Get_ADC_Value();
-		
-	ledcount++;  //LED闪
-	if(ledcount>=1000)
-	{PC13_TOG();ledcount=0;}
-		
-		
+  	/* USER CODE BEGIN */
+  	if (BTIM_GetITStatus(CW_BTIM1, BTIM_IT_OV))
+  	{
+		BTIM_ClearITPendingBit(CW_BTIM1, BTIM_IT_OV);
+		Get_ADC_Value();
+			
+		ledcount++;  //LED闪
+		if(ledcount>=1000)
+		{PC13_TOG();ledcount=0;}
+
 		timecount++;
 		sleepcount++;
-		if(Mode == 5)
-			Dis_Refresh();//数码管扫描显示
+
+		if(sleepcount >= 60000)//1分钟睡眠
+		{
+			enterDeep=1;
+			processDeepSleep();
+		}
+
+		Dis_Refresh();//数码管扫描显示
 		
 		
-	  	if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
-        {
+		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
+		{
 			keytime++;
 			sleepcount = 0;//有按键，重新计时
 			if(keytime>=100 )
 			{
 				keytime=0;  //切换模式
-				Mode++;
-				if(Mode>=5)Mode=0;
+				currentMode++;
+				if(currentMode>=MODE_END)currentMode=0;
 				BrushFlag=1; //更新数码管
 			}			 
 		}
 		else keytime=0;
-			 
+				
 		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET&&Mode!=0)//K2存储校准
-        {
+		{
 			keytime2++;
 			sleepcount = 0;//有按键，重新计时
 			if(keytime2>=100 )
 			{
 				keytime2=0;  //切换模式
 			
-				if(Mode==1)
+				if(Mode==2)
 				{
 					X05=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
 					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
 				}
-				if(Mode==2)
+				if(Mode==3)
 				{
 					X15=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
 					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
 				}
-				if(Mode==3)
+				if(Mode==4)
 				{
 					IX05=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
 					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
 				}
-				if(Mode==4)
+				if(Mode==5)
 				{
 					IX15=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
 					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;Mode=0;
@@ -352,18 +408,80 @@ void BTIM1_IRQHandler(void)
 			}			 
 		}
 		else keytime2=0; 
-			 
+				
 		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3退出模式
-        {
+		{
 				keytime3++;
-				sleepcount = 0;//有按键，重新计时
 				if(keytime3>=100 )
 				{
 					keytime3=0;  //切换模式
-					BrushFlag=1; //更新数码管
-				}			 
+					if(enterDeep){
+						enterDeep=0;//唤醒回来，设置清醒状态
+						sleepcount = 0;//唤醒回来，重新计时
+					}else{
+						enterDeep=1;
+						processDeepSleep();
+					}					
+				}
 		}
 		else keytime3=0;			 
-  }
+  	}
   /* USER CODE END */
+}
+
+void processDeepSleep(void)
+{
+    uint8_t res = 0u;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    PWR_InitTypeDef PWR_InitStructure;
+    /* Configure all GPIO as analog to reduce current consumption on non used IOs */
+    /* Warning : Reconfiguring all GPIO will close the connexion with the debugger */
+    /* Enable GPIOs clock */
+    //打开GPIO时钟
+    REGBITS_SET(CW_SYSCTRL->AHBEN, SYSCTRL_AHBEN_GPIOA_Msk | SYSCTRL_AHBEN_GPIOB_Msk | \
+                SYSCTRL_AHBEN_GPIOC_Msk | SYSCTRL_AHBEN_GPIOF_Msk);
+    GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+    GPIO_InitStructure.IT = GPIO_IT_NONE;
+    GPIO_InitStructure.Pins = GPIO_PIN_All;
+    GPIO_Init(CW_GPIOA, &GPIO_InitStructure);
+    GPIO_Init(CW_GPIOB, &GPIO_InitStructure);
+    GPIO_Init(CW_GPIOC, &GPIO_InitStructure);
+    GPIO_Init(CW_GPIOF, &GPIO_InitStructure);
+    //关闭GPIO时钟
+    REGBITS_CLR(CW_SYSCTRL->AHBEN, SYSCTRL_AHBEN_GPIOA_Msk | SYSCTRL_AHBEN_GPIOB_Msk | \
+                SYSCTRL_AHBEN_GPIOC_Msk | SYSCTRL_AHBEN_GPIOF_Msk);
+    /* Configure User Button */
+    KEYGPIO_Init();
+    /* Configures system clock after wake-up from DeepSleep: enable HSI and PLL with HSI as source*/
+    // 唤醒后自动使用内部高速时钟（HSI）
+    RCC_WAKEUPCLK_Config(RCC_SYSCTRL_WAKEUPCLKEN);
+    /* Enter Stop Mode */
+    PWR_InitStructure.PWR_Sevonpend = PWR_Sevonpend_Disable;
+    PWR_InitStructure.PWR_SleepDeep = PWR_SleepDeep_Enable;
+    PWR_InitStructure.PWR_SleepOnExit = PWR_SleepOnExit_Disable;
+    PWR_Config(&PWR_InitStructure);
+    //打开FLASH时钟
+    REGBITS_SET(CW_SYSCTRL->AHBEN, SYSCTRL_AHBEN_FLASH_Msk);
+    REGBITS_SET(CW_FLASH->CR1, FLASH_CR1_STANDBY_Msk); //打开FLASH低功耗使能控制
+    //关闭FLASH时钟
+    REGBITS_CLR(CW_SYSCTRL->AHBEN, SYSCTRL_AHBEN_FLASH_Msk);
+    //进入深度休眠模式前应当将HCLK的时钟频率修改为不大于4MHz
+    RCC_HSI_Enable(RCC_HSIOSC_DIV12);  //配置系统时钟为HSI 4M
+
+    PWR_GotoLpmMode();
+
+    /* Configures system clock after wake-up from DeepSleep: enable HSI and PLL with HSI as source*/
+    RCC_Configuration();
+    /* Initialize LED on the board */
+    //resume rcc gpio adc
+		RCC_Configuration();   //系统时钟64M
+	KEYGPIO_Init();
+	GPIO_WritePin(CW_GPIOC,GPIO_PIN_13,GPIO_Pin_RESET); 
+	Seg_Init();
+	Btim1_Init();
+	ADC_init(); 
+		
+	read_vol_cur_calibration();
+	ComputeK();
 }
