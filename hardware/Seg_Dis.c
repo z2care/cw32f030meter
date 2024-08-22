@@ -1,6 +1,6 @@
 #include "Seg_Dis.h"
 
-/*  ¹²ÒõÊýÂë¹Ü±àÂë±í£º
+/*
  0x3f   0x06   0x5b  0x4f  0x66  0x6d  0x7d  0x07  0x7f  0x6f 
   0      1      2     3     4     5     6     7     8     9 
  0xbf   0x86   0xdb  0xcf  0xe6  0xed  0xfd  0x87  0xff  0xef           
@@ -9,9 +9,9 @@
   A      F.     c     C     u     U     t     -  */
  
              
-uint8_t Seg_Table[21] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f,
-	                     0xbf, 0x86, 0xdb, 0xcf, 0xe6, 0xed, 0xfd, 0x87, 0xff, 0xef,
-						 0xF7};// 0xF7:A.
+uint8_t Seg_Table[28] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f,
+	                       0xbf, 0x86, 0xdb, 0xcf, 0xe6, 0xed, 0xfd, 0x87, 0xff, 0xef,
+						             0xF7, 0xF1, 0x58, 0x39, 0x1C, 0x3E, 0xF8, 0x40};// 0xF7:A.
 
 uint8_t Seg_Reg[6] = {1,2,3,4,5,6};
 
@@ -19,8 +19,8 @@ uint8_t Seg_Reg[6] = {1,2,3,4,5,6};
 
 void Seg_Init(void)
 {
-	__RCC_GPIOA_CLK_ENABLE();//´ò¿ªGPIOAµÄÊ±ÖÓ
-	__RCC_GPIOB_CLK_ENABLE();//´ò¿ªGPIOBµÄÊ±ÖÓ
+	__RCC_GPIOA_CLK_ENABLE();
+	__RCC_GPIOB_CLK_ENABLE();
 	
 	GPIO_InitTypeDef GPIO_InitStruct; 
 		
@@ -35,9 +35,9 @@ void Seg_Init(void)
 }
 
 /*
-ÏÔÊ¾ÊýÂë¹ÜÊý¾Ý
-Pos-µÚ¼¸Î»
-Num-±íÖÐµÚ¼¸¸öÊý
+power the pin for the display
+Pos - which seg to be power
+Num - which char to be shown
 */
 void Seg_Dis(uint8_t Pos,uint8_t Num)
 {
@@ -104,7 +104,7 @@ void Seg_Dis(uint8_t Pos,uint8_t Num)
 }
 
 /**
- * @brief ¹Ø±ÕËùÓÐ¹«¹²¶Ë
+ * @brief close the com
  * 
  */
 void Close_Com(void)
@@ -117,10 +117,11 @@ void Close_Com(void)
 	GPIO_WritePin(CW_GPIOA,GPIO_PIN_15,GPIO_Pin_SET);
 }
 
-//Ä£Ê½Ç°¶ËÏÔÊ¾£¬ÅäÖÃºÃÇ°3Î»MODEµÄÊýÂë¹ÜÊý¾Ý
+//display the mode in pre 3 segs
 void DisplayMode(Select_Mode value)
 {
-	switch(value)
+	uint8_t mode = (uint8_t)value;
+	switch(mode)
 	{
 		case TEST_MODE_VO://tu-
             Seg_Reg[0] = 26;
@@ -144,7 +145,7 @@ void DisplayMode(Select_Mode value)
             break;
 		case CALI_MODE_I0P5://C0.5
             Seg_Reg[0] = 23;
-            Seg_Reg[1] = 11;
+            Seg_Reg[1] = 10;
             Seg_Reg[2] = 5;
             break;
 		case CALI_MODE_I1P5://C1.5
@@ -152,29 +153,30 @@ void DisplayMode(Select_Mode value)
             Seg_Reg[1] = 11;
             Seg_Reg[2] = 5;
             break;
+		default:
+			break;
 	}
 
 }
-//µçÑ¹ºó¶ËÏÔÊ¾£¬ÅäÖÃºÃºó3Î»ÊýÂë¹ÜÊý¾Ý
+//show vol in after 3 segs
 void DisplaySETV(uint32_t value)
 {
 	uint8_t Thousands;
   uint8_t Hundreds;
   uint8_t Tens;
-  uint8_t Units; // ¸öÎ»Êý
+  uint8_t Units;
 	
 	Thousands = value / 1000;
 	 if(Thousands > 0)
     {
        Units     = value % 10;
-       value     = Units > 5 ? (value + 10) : value; // ¸ù¾ÝºóÒ»Î»ËÄÉáÎåÈë
+       value     = Units > 5 ? (value + 10) : value;
        Thousands = value / 1000 % 10;
        Hundreds  = value / 100 % 10;
        Tens      = value / 10 % 10;
 			
-       // ÏÔÊ¾xx.x·ü
        Seg_Reg[3] = Thousands;
-       Seg_Reg[4] = Hundreds + 10; // ¼ÓdpÏÔÊ¾
+       Seg_Reg[4] = Hundreds + 10;
        Seg_Reg[5] = Tens;
 		}
 		
@@ -183,14 +185,13 @@ void DisplaySETV(uint32_t value)
 	     Units     = value % 10;
 	     Tens      = value / 10 % 10;
        Hundreds  = value / 100 % 10;
-	     
-			 // ÏÔÊ¾x.xx·ü
-	     Seg_Reg[3] = Hundreds + 10;              // ¼ÓdpÏÔÊ¾
+
+	     Seg_Reg[3] = Hundreds + 10;
 	     Seg_Reg[4] = Tens;
 	     Seg_Reg[5] = Units;
 	   }
 }
-//µçÑ¹Ç°¶ËÏÔÊ¾£¬ÅäÖÃºÃºó3Î»ÊýÂë¹ÜÊý¾Ý
+//display vol in pre 3 segs
 void Display(uint32_t value)
 {
 	uint8_t Thousands;
@@ -202,14 +203,14 @@ void Display(uint32_t value)
 	 if(Thousands > 0)
     {
        Units     = value % 10;
-       value     = Units > 5 ? (value + 10) : value; // ¸ù¾ÝºóÒ»Î»ËÄÉáÎåÈë
+       value     = Units > 5 ? (value + 10) : value;
        Thousands = value / 1000 % 10;
        Hundreds  = value / 100 % 10;
        Tens      = value / 10 % 10;
 			
        // ÏÔÊ¾xx.x·ü
        Seg_Reg[0] = Thousands;
-       Seg_Reg[1] = Hundreds + 10; // ¼ÓdpÏÔÊ¾
+       Seg_Reg[1] = Hundreds + 10;
        Seg_Reg[2] = Tens;
 		}
 		
@@ -218,23 +219,22 @@ void Display(uint32_t value)
 	     Units     = value % 10;
 	     Tens      = value / 10 % 10;
        Hundreds  = value / 100 % 10;
-	     
-			 // ÏÔÊ¾x.xx·ü
-	     Seg_Reg[0] = Hundreds + 10;              // ¼ÓdpÏÔÊ¾
+
+	     Seg_Reg[0] = Hundreds + 10;
 	     Seg_Reg[1] = Tens;
 	     Seg_Reg[2] = Units;
 	   }
 }
-//µçÁ÷ºó¶ËÏÔÊ¾£¬ÅäÖÃºÃºó3Î»ÊýÂë¹ÜÊý¾Ý
+//display I in after 3 segs
 void DisplayI(uint32_t value)
 {
-	     Seg_Reg[3] = value/100 + 10;// ¼ÓdpÏÔÊ¾
+	     Seg_Reg[3] = value/100 + 10;
        Seg_Reg[4] = value%100/10; 
        Seg_Reg[5] = value%10;	
 }
 
 /**
- * @brief ÊýÂë¹ÜÉ¨ÃèÏÔÊ¾º¯Êý,¶¨Ê±Æ÷ÖÜÆÚÐÔµ÷ÓÃ
+ * @brief refresh every 6 segs one by one
  *
  */
 void Dis_Refresh()
@@ -249,4 +249,4 @@ void Dis_Refresh()
 		num = 0;
 	}
 }
-}
+

@@ -53,6 +53,7 @@
 
 /* External variables --------------------------------------------------------*/
 /* USER CODE BEGIN EV */
+extern volatile uint8_t gKeyStatus;
 /* USER CODE END EV */
 
 /******************************************************************************/

@@ -11,6 +11,11 @@
 #include "cw32f030_adc.h"
 #include "cw32f030_rcc.h"
 
+extern uint16_t Volt_Buffer[ADC_SAMPLE_SIZE];
+//uint16_t TD_Buffer[ADC_SAMPLE_SIZE];
+//uint16_t JZ_Buffer[ADC_SAMPLE_SIZE];
+extern uint16_t Curr_Buffer[ADC_SAMPLE_SIZE];
+
 void ADC_init(void);
 void Get_ADC_Value(void);
 	
