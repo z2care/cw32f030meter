@@ -1,59 +1,59 @@
 #include "ADC.h"
 
 uint16_t Volt_Buffer[ADC_SAMPLE_SIZE];
-uint16_t TD_Buffer[ADC_SAMPLE_SIZE];
-uint16_t JZ_Buffer[ADC_SAMPLE_SIZE];
+//uint16_t TD_Buffer[ADC_SAMPLE_SIZE];
+//uint16_t JZ_Buffer[ADC_SAMPLE_SIZE];
 uint16_t Curr_Buffer[ADC_SAMPLE_SIZE];
 
 	/*
-	µçÑ¹ ADCIN11->PB10->CH11
-	Í¨¶Ï ADCIN9 ->PB01->CH9
-	»ù×¼ ADCIN8 ->PB11->CH12
-	µçÁ÷ ADCIN12->PA00->CH0
+	ç”µåŽ‹ ADCIN11->PB10->CH11
+	é€šæ–­ ADCIN9 ->PB01->CH9//éªŒè¯å¤±è´¥
+	åŸºå‡† ADCIN8 ->PB11->CH12//ç¨‹åºå¤æ‚åºŸå¼ƒ
+	ç”µæµ ADCIN12->PA00->CH0
 	*/
 void ADC_init(void)
 {
-    ADC_InitTypeDef     ADC_InitStructure;         //ADCÅäÖÃ½á¹¹Ìå
-    ADC_SerialChTypeDef ADC_SerialChStructure;     //ADCÐòÁÐÍ¨µÀ½á¹¹Ìå
+    ADC_InitTypeDef     ADC_InitStructure;         //ADCé…ç½®ç»“æž„ä½“
+    ADC_SerialChTypeDef ADC_SerialChStructure;     //ADCåºåˆ—é€šé“ç»“æž„ä½“
 	
-    __RCC_GPIOA_CLK_ENABLE(); //´ò¿ªADC¶ÔÓ¦Òý½ÅÊ±ÖÓ
-    __RCC_GPIOB_CLK_ENABLE(); //´ò¿ªADC¶ÔÓ¦Òý½ÅÊ±ÖÓ
-    __RCC_ADC_CLK_ENABLE();   // ´ò¿ªADCÊ±ÖÓ
+    __RCC_GPIOA_CLK_ENABLE(); //æ‰“å¼€ADCå¯¹åº”å¼•è„šæ—¶é’Ÿ
+    __RCC_GPIOB_CLK_ENABLE(); //æ‰“å¼€ADCå¯¹åº”å¼•è„šæ—¶é’Ÿ
+    __RCC_ADC_CLK_ENABLE();   // æ‰“å¼€ADCæ—¶é’Ÿ
 	
     
-    PB10_ANALOG_ENABLE();                   //Ê¹ÄÜÄ£ÄâÒý½Å
-    PB01_ANALOG_ENABLE();                   //Ê¹ÄÜÄ£ÄâÒý½Å
-    PB11_ANALOG_ENABLE();                   //Ê¹ÄÜÄ£ÄâÒý½Å
-    PA00_ANALOG_ENABLE();                   //Ê¹ÄÜÄ£ÄâÒý½Å
+    PB10_ANALOG_ENABLE();                   //ä½¿èƒ½æ¨¡æ‹Ÿå¼•è„š
+    //PB01_ANALOG_ENABLE();                   //ä½¿èƒ½æ¨¡æ‹Ÿå¼•è„š
+    //PB11_ANALOG_ENABLE();                   //ä½¿èƒ½æ¨¡æ‹Ÿå¼•è„š
+    PA00_ANALOG_ENABLE();                   //ä½¿èƒ½æ¨¡æ‹Ÿå¼•è„š
 	
-    ADC_StructInit(&ADC_InitStructure);      // ADCÄ¬ÈÏÖµ³õÊ¼»¯
-    ADC_InitStructure.ADC_ClkDiv     = ADC_Clk_Div128; //ADC¹¤×÷Ê±ÖÓÅäÖÃ PCLK/4 = 6/4 = 1.5Mhz
+    ADC_StructInit(&ADC_InitStructure);      // ADCé»˜è®¤å€¼åˆå§‹åŒ–
+    ADC_InitStructure.ADC_ClkDiv     = ADC_Clk_Div128; //ADCå·¥ä½œæ—¶é’Ÿé…ç½® PCLK/4 = 6/4 = 1.5Mhz
 	
-/*ÐÅºÅµçÑ¹½ÏµÍÊ±£¬¿ÉÒÔ½µµÍ²Î¿¼µçÑ¹À´Ìá¸ß·Ö±æÂÊ¡£ ¸Ä±ä²Î¿¼µçÑ¹ºó£¬Í¬Ñù¶þ½øÖÆ±íÊ¾µÄµçÑ¹Öµ¾Í»á²»Ò»Ñù£¬
-  ×î´óµÄ¶þ½øÖÆ£¨È«1£©±íÊ¾µÄ¾ÍÊÇÄãµÄ²Î¿¼µçÑ¹£¬ÔÚ¼ÆËãÊµ¼ÊµçÑ¹Ê±£¬¾ÍÐèÒª½«²Î¿¼µçÑ¹¿¼ÂÇ½øÈ¥¡£*/
-    ADC_InitStructure.ADC_VrefSel    = ADC_Vref_BGR1p5;     //²Î¿¼µçÑ¹ÉèÖÃÎª1.5V
-    ADC_InitStructure.ADC_SampleTime = ADC_SampTime10Clk;   //ÓÉÓÚµçÑ¹ÐÅºÅÎªÂýËÙÐÅºÅ£¬ADC²ÉÑùÊ±¼äÎªÊ®¸öADC²ÉÑùÖÜÆÚÒÔÈ·±£×¼È·
+/*ä¿¡å·ç”µåŽ‹è¾ƒä½Žæ—¶ï¼Œå¯ä»¥é™ä½Žå‚è€ƒç”µåŽ‹æ¥æé«˜åˆ†è¾¨çŽ‡ã€‚ æ”¹å˜å‚è€ƒç”µåŽ‹åŽï¼ŒåŒæ ·äºŒè¿›åˆ¶è¡¨ç¤ºçš„ç”µåŽ‹å€¼å°±ä¼šä¸ä¸€æ ·ï¼Œ
+  æœ€å¤§çš„äºŒè¿›åˆ¶ï¼ˆå…¨1ï¼‰è¡¨ç¤ºçš„å°±æ˜¯ä½ çš„å‚è€ƒç”µåŽ‹ï¼Œåœ¨è®¡ç®—å®žé™…ç”µåŽ‹æ—¶ï¼Œå°±éœ€è¦å°†å‚è€ƒç”µåŽ‹è€ƒè™‘è¿›åŽ»ã€‚*/
+    ADC_InitStructure.ADC_VrefSel    = ADC_Vref_BGR1p5;     //å‚è€ƒç”µåŽ‹è®¾ç½®ä¸º1.5V
+    ADC_InitStructure.ADC_SampleTime = ADC_SampTime10Clk;   //ç”±äºŽç”µåŽ‹ä¿¡å·ä¸ºæ…¢é€Ÿä¿¡å·ï¼ŒADCé‡‡æ ·æ—¶é—´ä¸ºåä¸ªADCé‡‡æ ·å‘¨æœŸä»¥ç¡®ä¿å‡†ç¡®
 
-   	ADC_SerialChStructure.ADC_Sqr0Chmux  = ADC_SqrCh11;      //ÅäÖÃADCÐòÁÐ£¬PB01ÊÇADCµÄµÚ9Í¨µÀ
-    ADC_SerialChStructure.ADC_Sqr1Chmux  = ADC_SqrCh9;
-    ADC_SerialChStructure.ADC_Sqr2Chmux  = ADC_SqrCh12;      //ÅäÖÃADCÐòÁÐ£¬PB01ÊÇADCµÄµÚ9Í¨µÀ
-    ADC_SerialChStructure.ADC_Sqr3Chmux  = ADC_SqrCh0;
-    ADC_SerialChStructure.ADC_SqrEns     = ADC_SqrEns03;
-    ADC_SerialChStructure.ADC_InitStruct = ADC_InitStructure; //ADC³õÊ¼»¯
+   	ADC_SerialChStructure.ADC_Sqr0Chmux  = ADC_SqrCh11;      //é…ç½®ADCåºåˆ—ï¼ŒPB01æ˜¯ADCçš„ç¬¬9é€šé“
+    //ADC_SerialChStructure.ADC_Sqr1Chmux  = ADC_SqrCh9;
+    //ADC_SerialChStructure.ADC_Sqr2Chmux  = ADC_SqrCh12;      //é…ç½®ADCåºåˆ—ï¼ŒPB01æ˜¯ADCçš„ç¬¬9é€šé“
+    ADC_SerialChStructure.ADC_Sqr1Chmux  = ADC_SqrCh0;
+    ADC_SerialChStructure.ADC_SqrEns     = ADC_SqrEns01;
+    ADC_SerialChStructure.ADC_InitStruct = ADC_InitStructure; //ADCåˆå§‹åŒ–
 		
-    ADC_SerialChContinuousModeCfg(&ADC_SerialChStructure);   //ADCÐòÁÐÁ¬Ðø×ª»»Ä£Ê½ÅäÖÃ
-    ADC_ClearITPendingAll();           //Çå³ýADCËùÓÐÖÐ¶Ï×´Ì¬
-    ADC_Enable();                      // ADCÊ¹ÄÜ
-    ADC_SoftwareStartConvCmd(ENABLE);  //ADC×ª»»Èí¼þÆô¶¯ÃüÁî
+    ADC_SerialChContinuousModeCfg(&ADC_SerialChStructure);   //ADCåºåˆ—è¿žç»­è½¬æ¢æ¨¡å¼é…ç½®
+    ADC_ClearITPendingAll();           //æ¸…é™¤ADCæ‰€æœ‰ä¸­æ–­çŠ¶æ€
+    ADC_Enable();                      // ADCä½¿èƒ½
+    ADC_SoftwareStartConvCmd(ENABLE);  //ADCè½¬æ¢è½¯ä»¶å¯åŠ¨å‘½ä»¤
 }
 
 void Get_ADC_Value(void)
 {
 	static uint8_t cnt;
   ADC_GetSqr0Result(&Volt_Buffer[cnt]);
-	//ADC_GetSqr1Result(&Volt_Buffer[cnt]);//Í¨¶ÏÔÝ²»¿ÉÓÃ
-	ADC_GetSqr2Result(&JZ_Buffer[cnt]);
-  ADC_GetSqr3Result(&Curr_Buffer[cnt]);	
+	//ADC_GetSqr1Result(&Volt_Buffer[cnt]);//é€šæ–­æš‚ä¸å¯ç”¨
+	//ADC_GetSqr2Result(&JZ_Buffer[cnt]);
+  ADC_GetSqr1Result(&Curr_Buffer[cnt]);	
 	
 	cnt++;
 	if(cnt >= ADC_SAMPLE_SIZE)
