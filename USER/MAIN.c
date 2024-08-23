@@ -8,6 +8,7 @@
 #include "PWR.h"
 #include "calibration.h"
 #include "measurement.h"
+#include "Buzzer.h"
 
 extern uint8_t Seg_Reg[6];
 
@@ -122,6 +123,7 @@ int main()
 	Btim1_Init();
 	ADC_init();
 	UART3_Init();
+	Buzzer_Init();
 
 	read_vol_cur_calibration();
 	ComputeK();
@@ -162,74 +164,81 @@ void BTIM1_IRQHandler(void)
   	/* USER CODE BEGIN */
   	if (BTIM_GetITStatus(CW_BTIM1, BTIM_IT_OV))
   	{
-		BTIM_ClearITPendingBit(CW_BTIM1, BTIM_IT_OV);
-		Get_ADC_Value();
-			
-		ledcount++;  //LED闪
-		if(ledcount>=1000)
-		{PC13_TOG();ledcount=0;}
+			BTIM_ClearITPendingBit(CW_BTIM1, BTIM_IT_OV);
+			Get_ADC_Value();
+				
+			ledcount++;  //LED闪
+			if(ledcount>=1000)
+			{PC13_TOG();ledcount=0;}
 
-		timecount++;
-		sleepcount++;
-		
-		Dis_Refresh();//数码管扫描显示
-		
-		
-		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
-		{
-			keytime++;
-			sleepcount = 0;//有按键，重新计时
-			if(keytime>=100 )
-			{
-				keytime=0;  //切换模式
-				currentMode++;
-				if(currentMode>=MODE_END)currentMode=0;
-				BrushFlag=1; //更新数码管
-			}			 
-		}
-		else keytime=0;
-				
-		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET && (currentMode>1))//K2存储校准
-		{
-			keytime2++;
-			sleepcount = 0;//有按键，重新计时
-			if(keytime2>=100 )
-			{
-				keytime2=0;  //切换模式
+			timecount++;
+			sleepcount++;
 			
-				if(currentMode==2)
+			Dis_Refresh();//数码管扫描显示
+			
+			
+			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
+			{
+				buzzer_beep();
+				keytime++;
+				sleepcount = 0;//有按键，重新计时
+				if(keytime>=100 )
 				{
-					X05=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
-					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
-				}
-				if(currentMode==3)
+					keytime=0;  //切换模式
+					currentMode++;
+					if(currentMode>=MODE_END)currentMode=0;
+					BrushFlag=1; //更新数码管
+				}			 
+			}else{
+				buzzer_idle();
+				keytime=0;
+			}
+					
+			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET && (currentMode>1))//K2存储校准
+			{
+				buzzer_beep();
+				keytime2++;
+				sleepcount = 0;//有按键，重新计时
+				if(keytime2>=100 )
 				{
-					X15=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
-					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
-				}
-				if(currentMode==4)
-				{
-					IX05=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
-					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
-				}
-				if(currentMode==5)
-				{
-					IX15=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
-					save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
-				}						 					 
-			}			 
-		}
-		else keytime2=0; 
+					keytime2=0;  //切换模式
 				
-//		if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3退出模式
-//		{
-//				keytime3++;
-//				if(keytime3>=100 )
-//				{
-//					keytime3=0;  //切换模式				
-//				}
-//		}
-//		else keytime3=0;			 
+					if(currentMode==2)
+					{
+						X05=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
+						save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
+					}
+					if(currentMode==3)
+					{
+						X15=Mean_Value_Filter(Volt_Buffer,ADC_SAMPLE_SIZE);
+						save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
+					}
+					if(currentMode==4)
+					{
+						IX05=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
+						save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
+					}
+					if(currentMode==5)
+					{
+						IX15=Mean_Value_Filter(Curr_Buffer,ADC_SAMPLE_SIZE);
+						save_calibration();ComputeK();Volt_Cal();BrushFlag=1;currentMode=0;
+					}						 					 
+				}			 
+			}else{
+				buzzer_idle();
+				keytime2=0;
+			}
+					
+			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_10)==GPIO_Pin_RESET)//K3退出模式
+			{
+					keytime3++;
+					if(keytime3>=100 )
+					{
+						buzzer_idle();
+						keytime3=0;  //切换模式				
+					}
+			}
+			else keytime3=0;			 
   	}
   /* USER CODE END */
 }

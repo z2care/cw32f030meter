@@ -427,6 +427,11 @@
               <FileType>1</FileType>
               <FilePath>.\libraries\src\system_cw32f030.c</FilePath>
             </File>
+            <File>
+              <FileName>cw32f030_gtim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\libraries\src\cw32f030_gtim.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -486,6 +491,16 @@
               <FileName>PWR.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\hardware\PWR.h</FilePath>
+            </File>
+            <File>
+              <FileName>Buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hardware\Buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>Buzzer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hardware\Buzzer.h</FilePath>
             </File>
           </Files>
         </Group>

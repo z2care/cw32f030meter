@@ -4,6 +4,8 @@
 #include "BTIM1.h"
 #include "ADC.h"
 #include "calibration.h"
+#include "Buzzer.h"
+#include "UART3.h"
 
 void processDeepSleep(void)
 {
@@ -60,7 +62,9 @@ void processDeepSleep(void)
 		GPIO_WritePin(CW_GPIOC,GPIO_PIN_13,GPIO_Pin_RESET); 
 		Seg_Init();
 		Btim1_Init();
-		ADC_init(); 
+		ADC_init();
+		Buzzer_Init();
+		UART3_Init();
 		
 		read_vol_cur_calibration();
 		ComputeK();

@@ -56,7 +56,7 @@ void Volt_Cal(void)
     {
         V_Buffer = V_Buffer / 10;
     }
-	printf("%d\r\n",V_Buffer);
+	printf("%0.0f\r\n",(float)V_Buffer);
 		
 		
 	if(I_Buffer>=IX05)
