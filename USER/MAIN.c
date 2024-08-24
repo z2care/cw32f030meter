@@ -17,6 +17,10 @@ volatile uint8_t gKeyStatus;  /* set to 1 after User Button interrupt  */
 
 unsigned int timecount=0;
 unsigned int sleepcount=0;
+unsigned int beepcount=0;
+
+unsigned int beep_stat = 0;
+unsigned int sleep_beep_stat = 0;
 
 //定义模式
 // mode 0: TEST.VO,tu-
@@ -124,7 +128,6 @@ int main()
 	ADC_init();
 	UART3_Init();
 	Buzzer_Init();
-
 	read_vol_cur_calibration();
 	ComputeK();
 	while(1)
@@ -150,10 +153,28 @@ int main()
 		
 		if(sleepcount >= 60000)//1分钟睡眠
 		{
-			processDeepSleep();
-			sleepcount=0;
+			if(beepcount<1000){
+				  sleep_beep_stat = 1;
+					buzzer_beep();
+			}else{
+				  sleep_beep_stat = 0;
+					buzzer_idle();
+					beepcount=0;
+				  processDeepSleep();
+			    sleepcount=0;
+			}
 		}
-
+		
+		if(beep_stat)
+		{
+			if(beepcount<100){
+			    buzzer_beep();
+			}else{
+				  buzzer_idle();
+				  beepcount=0;
+				  beep_stat = 0;
+			}			
+		}
 	}
 }
 
@@ -174,33 +195,37 @@ void BTIM1_IRQHandler(void)
 			timecount++;
 			sleepcount++;
 			
+			if((beep_stat == 1) | (sleep_beep_stat == 1))
+			    beepcount++;
+			
 			Dis_Refresh();//数码管扫描显示
 			
 			
 			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_8)==GPIO_Pin_RESET)//K1切换模式
 			{
-				buzzer_beep();
+				
 				keytime++;
 				sleepcount = 0;//有按键，重新计时
 				if(keytime>=100 )
 				{
+					beep_stat = 1;
 					keytime=0;  //切换模式
 					currentMode++;
 					if(currentMode>=MODE_END)currentMode=0;
 					BrushFlag=1; //更新数码管
 				}			 
 			}else{
-				buzzer_idle();
 				keytime=0;
 			}
 					
 			if(GPIO_ReadPin(CW_GPIOA,GPIO_PIN_9)==GPIO_Pin_RESET && (currentMode>1))//K2存储校准
 			{
-				buzzer_beep();
+				beep_stat = 1;
 				keytime2++;
 				sleepcount = 0;//有按键，重新计时
 				if(keytime2>=100 )
 				{
+					beep_stat = 1;
 					keytime2=0;  //切换模式
 				
 					if(currentMode==2)
@@ -225,7 +250,6 @@ void BTIM1_IRQHandler(void)
 					}						 					 
 				}			 
 			}else{
-				buzzer_idle();
 				keytime2=0;
 			}
 					
@@ -234,7 +258,7 @@ void BTIM1_IRQHandler(void)
 					keytime3++;
 					if(keytime3>=100 )
 					{
-						buzzer_idle();
+						beep_stat = 1;
 						keytime3=0;  //切换模式				
 					}
 			}
