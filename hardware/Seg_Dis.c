@@ -241,7 +241,7 @@ void Dis_Refresh()
 {
   	static uint8_t num = 0;
 
-	Close_Com();//ÏÈ¹Ø±Õ¹«¹²¶Ë,·ÀÖ¹ÖØÓ°
+	Close_Com();
 	Seg_Dis(num,Seg_Reg[num]);
 	num++;
 	if(num > 6)

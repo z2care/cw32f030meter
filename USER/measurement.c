@@ -1,9 +1,11 @@
 #include "measurement.h"
 #include "ADC.h"
 #include "calibration.h"
+#include "UART3.h"
 
 uint16_t V_Buffer = 0;
 uint16_t I_Buffer = 0;
+uint32_t timeline = 0;
 
 uint32_t Mean_Value_Filter(uint16_t *value, uint32_t size)     //¾ùÖµÂË²¨
 {
@@ -56,7 +58,8 @@ void Volt_Cal(void)
     {
         V_Buffer = V_Buffer / 10;
     }
-	printf("%0.0f\r\n",(float)V_Buffer);
+    timeline+=10;
+	  printf("%d,%d\r\n",timeline,V_Buffer);
 		
 		
 	if(I_Buffer>=IX05)

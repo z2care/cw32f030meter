@@ -22,6 +22,8 @@ unsigned int beepcount=0;
 unsigned int beep_stat = 0;
 unsigned int sleep_beep_stat = 0;
 
+unsigned int enter_sleep = 0;
+
 //定义模式
 // mode 0: TEST.VO,tu-
 // mode 1: TEST.CU,tc-
@@ -148,7 +150,7 @@ int main()
 		
 		if(gKeyStatus==1)
 		{
-			processDeepSleep();
+			enter_sleep = 1;
 		}
 		
 		if(sleepcount >= 60000)//1分钟睡眠
@@ -173,6 +175,10 @@ int main()
 				  buzzer_idle();
 				  beepcount=0;
 				  beep_stat = 0;
+				  if(enter_sleep == 1){
+					    processDeepSleep();
+				      enter_sleep = 0;
+					}
 			}			
 		}
 	}

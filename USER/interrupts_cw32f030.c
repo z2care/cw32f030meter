@@ -414,12 +414,12 @@ void UART2_IRQHandler(void)
 /**
  * @brief This funcation handles UART3
  */
-void UART3_IRQHandler(void)
-{
-  /* USER CODE BEGIN */
+//void UART3_IRQHandler(void)
+//{
+//  /* USER CODE BEGIN */
 
-  /* USER CODE END */
-}
+//  /* USER CODE END */
+//}
 
 /**
  * @brief This funcation handles AWT
